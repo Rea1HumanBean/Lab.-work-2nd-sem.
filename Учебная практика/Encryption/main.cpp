@@ -73,6 +73,12 @@ public:
 				words[i][j] = (words[i][j] - key[j]);
 		}
 	}
+	
+	~Encryption()
+	{
+		delete key;
+	}
+	
 };
 
 int main()
