@@ -10,12 +10,6 @@ struct Point {
     int y = 0;
 };
 
-enum class Shape {
-    Rectangle,
-    Triangle,
-    Circle
-};
-
 enum class Color {
     White,
     Red,
