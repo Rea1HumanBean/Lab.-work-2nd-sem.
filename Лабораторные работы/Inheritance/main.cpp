@@ -1,138 +1,139 @@
-﻿#include <iostream>
+#define Pi 3.1415
+
+#include <iostream>
 #include <cmath>
-#define M_PI 3.14159
+#include <vector>
+
 
 struct Point {
-    int x;
-    int y;
+    int x = 0;
+    int y = 0;
 };
 
-class Shape {
-public:
-    int** arr;
-    double area;
-    const int len;
-
-    Shape(int _array) : area(0),len(_array) {
-        arr = new int* [_array];
-        for (int i = 0; i < _array; i++)
-        {
-            arr[i] = new int[2];
-        }
-    }
-
-    void Define_coordinate() {
-        for (int i = 0; i < len; i++) {
-            for (int k = 0; k < 2; k++) {
-                if (k == 0)
-                    std::cout << "Enter the X coordinate - ";
-                else
-                    std::cout << "Enter the Y coordinate - ";
-
-                std::cin >> arr[i][k];
-            }
-        }
-    }
-
-    ~Shape() {
-        for (int i = 0; i < len; i++)
-            delete arr[i];
-    }
+enum class Shape {
+    Rectangle,
+    Triangle,
+    Circle
 };
 
-class Triangle : public Shape {
-    Point Vect[3];
-    double lenght_vect[3];
+enum class Color {
+    White,
+    Red,
+    Black
+};
+
+std::ostream& operator<<(std::ostream& os, const Color& color) {
+    switch (color) {
+    case Color::White:
+        os << "White";
+        break;
+    case Color::Red:
+        os << "Red";
+        break;
+    case Color::Black:
+        os << "Black";
+        break;
+    }
+    return os;
+}
+
+class Object {
+protected:
+    std::vector<Point> coord;
+    Color paint;
 public:
-    Triangle(int len) :Shape(len) {
-        try {
-            if (len != 3) {
-                throw std::out_of_range("Error:There are only three points in a triangle ");
-            }
-        }
-        catch (const std::out_of_range& e) {
-            std::cerr << "Error: There are only three points in a triangle" << '\n';
-            exit(-1);
+    Object(std::vector<Point> _coord ,Color _paint): coord(_coord), paint(_paint) {
+        this->coord = _coord;
+        this->paint = _paint;
+    }
+
+    virtual double area() = 0;
+};
+
+class Triangle :  Object {
+    int quantity = 3;
+    std::vector<Point> vectors;
+public:
+    Triangle(std::vector<Point> coord, Color color): Object(coord, paint) {
+        Point pos;
+        for (int i = 0; i < quantity; i++) {
+            int j = (i + 1) % 3;
+            pos.x = coord[j].x - coord[i].x;
+            pos.y = coord[j].y - coord[i].y;
+            vectors.push_back(pos);
         }
     }
 
-    double Area() {
-        double semi_p = 0;
-        for (int k = 0; k < len; k++) {
-            int j = (k + 1) % 3;
-            Vect[k].x = arr[j][0] - arr[k][0];
-            Vect[k].y = arr[j][1] - arr[k][1];
-            lenght_vect[k] = sqrt((pow(Vect[k].x, 2) + pow(Vect[k].y, 2)));
-            semi_p += lenght_vect[k];
+    virtual double area() override {
+        double sum = 0;
+        for (int i = 0; i < quantity; i++) {
+            sum += sqrt(pow(vectors[i].x,2) + pow(vectors[i].y,2));
         }
-        semi_p = semi_p / 2;
-        area = sqrt(semi_p * (semi_p - lenght_vect[0]) * (semi_p - lenght_vect[1]) * (semi_p - lenght_vect[2]));
+        sum = sum / 2;
+        double area = sum;
+        for (int i = 0; i < quantity; i++) {
+            area *= sum - sqrt(pow(vectors[i].x, 2) + pow(vectors[i].y, 2));
+        }
+        area = sqrt(area);
         return area;
     }
 };
 
-class Circle: public Shape {
-    Point Vect[2];
-    double radius;
+class  Rectangle : Object {
+    int quantity = 2;
+    std::vector<Point> vectors;
 public:
-    Circle(int len) :Shape(len) {
-        try {
-            if (len != 2) {
-                throw std::out_of_range("Error:There are only two points in a circle ");
-            }
-        }
-        catch (const std::out_of_range& e) {
-            std::cerr << "Error: There are only two points in a cicrle" << '\n';
-            exit(-1);
-        }
+    Rectangle(std::vector<Point> coord, Color color): Object(coord, color) {
+        Point pos;
+        pos.x = coord[1].x - coord[0].x;
+        pos.y = 0;
+        vectors.push_back(pos);
+        pos.x = 0;
+        pos.y = coord[1].y - coord[0].y;
+        vectors.push_back(pos);
     }
 
-    double Area() {
-        Vect->x = arr[1][0] - arr[0][0];
-        Vect->y = arr[1][1] - arr[0][1];
-        radius = sqrt((pow(Vect->x, 2) + pow(Vect->y, 2)));
-        area = M_PI * pow(radius,2);
+    virtual double area() {
+        double area = sqrt(pow(vectors[0].x, 2) + pow(vectors[0].y, 2)) * sqrt(pow(vectors[1].x, 2) + pow(vectors[1].y, 2));
         return area;
     }
 };
 
-class Rectangle : public Shape {
-    Point Vect[1];
-    double lenght_vec[2];
+class  Circle : Object {
+    Point vector;
 public:
-    Rectangle(int len) :Shape(len) {
-        try {
-            if (len != 2) {
-                throw std::out_of_range("Error:There are two three points in a rectangle ");
-            }
-        }
-        catch (const std::out_of_range& e) {
-            std::cerr << "Error: You only need the coordinates of two opposite points" << '\n';
-            exit(-1);
-        }
+    Circle(std::vector<Point> coord, Color color) : Object(coord, color) {
+        vector.x = coord[1].x - coord[0].x;
+        vector.y = coord[1].y - coord[0].y;
     }
 
-    double Area() {
-        Vect->x = arr[1][0] - arr[0][0];
-        Vect->y = arr[1][1] - arr[0][1];
-        lenght_vec[0] = sqrt(pow(Vect->x, 2));
-        lenght_vec[1] = sqrt(pow(Vect->y, 2));
-        area = lenght_vec[0] * lenght_vec[1];
+    double area() override {
+        double area = Pi * sqrt(pow(vector.x, 2) + pow(vector.y, 2));
         return area;
     }
+
 };
 
 int main() {
-      Triangle A(3);
-      A.Define_coordinate();
-      std::cout << A.Area() << std::endl;
 
-      Circle B(2);
-      B.Define_coordinate();
-      std::cout << B.Area() << std::endl;
+    std::vector<Point> Tr;
+    Tr.push_back({ 0,0 });
+    Tr.push_back({ 5,3 });
+    Tr.push_back({ 5,5 });
 
-      Rectangle C(2);
-      C.Define_coordinate();
-      std::cout << C.Area() << std::endl;
+    std::vector<Point> R;
+    R.push_back({ 1,1 });
+    R.push_back({ 4,3 });
 
+    std::vector<Point> C;
+    C.push_back({ 0,0 });
+    C.push_back({ 3,0 });
+
+    Triangle* Trgl = new Triangle(Tr, Color::White);
+    Rectangle* Rec = new Rectangle(R, Color::Red);
+    Circle* Cr = new Circle(C, Color::Black);
+
+    std::cout << "Triangle area is - " << Trgl->area() << std::endl;
+    std::cout << "Rectangle area is - " << Rec->area() << std::endl;
+    std::cout << "Circle area is - " << Cr->area() << std::endl;
 }
