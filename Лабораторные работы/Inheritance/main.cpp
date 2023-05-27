@@ -4,7 +4,6 @@
 #include <cmath>
 #include <vector>
 
-
 struct Point {
     int x = 0;
     int y = 0;
@@ -44,7 +43,7 @@ public:
     virtual double area() = 0;
 };
 
-class Triangle :  Object {
+class Triangle : public Object {
     int quantity = 3;
     std::vector<Point> vectors;
 public:
@@ -69,11 +68,14 @@ public:
             area *= sum - sqrt(pow(vectors[i].x, 2) + pow(vectors[i].y, 2));
         }
         area = sqrt(area);
+        std::cout << "Triangle area is - " << area << std::endl;
         return area;
     }
+
+    virtual ~Triangle() {};
 };
 
-class  Rectangle : Object {
+class  Rectangle :public Object {
     int quantity = 2;
     std::vector<Point> vectors;
 public:
@@ -87,13 +89,16 @@ public:
         vectors.push_back(pos);
     }
 
-    virtual double area() {
+    virtual double area() override {
         double area = sqrt(pow(vectors[0].x, 2) + pow(vectors[0].y, 2)) * sqrt(pow(vectors[1].x, 2) + pow(vectors[1].y, 2));
+        std::cout << "Rectangle area is - " << area << std::endl;
         return area;
     }
+
+    virtual ~Rectangle() {};
 };
 
-class  Circle : Object {
+class  Circle : public Object {
     Point vector;
 public:
     Circle(std::vector<Point> coord, Color color) : Object(coord, color) {
@@ -103,12 +108,15 @@ public:
 
     double area() override {
         double area = Pi * sqrt(pow(vector.x, 2) + pow(vector.y, 2));
+        std::cout << "Circle area is - " << area << std::endl;
         return area;
     }
 
+    virtual ~Circle() {};
 };
 
 int main() {
+    std::vector<Object*> figures;
 
     std::vector<Point> Tr;
     Tr.push_back({ 0,0 });
@@ -123,11 +131,16 @@ int main() {
     C.push_back({ 0,0 });
     C.push_back({ 3,0 });
 
-    Triangle* Trgl = new Triangle(Tr, Color::White);
-    Rectangle* Rec = new Rectangle(R, Color::Red);
-    Circle* Cr = new Circle(C, Color::Black);
+    Object* Trgl = new Triangle(Tr, Color::White);
+    Object* Rec = new Rectangle(R, Color::Red);
+    Object* Cr = new Circle(C, Color::Black);
 
-    std::cout << "Triangle area is - " << Trgl->area() << std::endl;
-    std::cout << "Rectangle area is - " << Rec->area() << std::endl;
-    std::cout << "Circle area is - " << Cr->area() << std::endl;
+    figures.push_back(Trgl);
+    figures.push_back(Rec);
+    figures.push_back(Cr);
+
+    for (int i = 0; i < figures.size(); i++)
+    {
+        figures[i]->area();
+    }
 }
