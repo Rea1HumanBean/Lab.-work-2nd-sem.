@@ -41,6 +41,8 @@ public:
     }
 
     virtual double area() = 0;
+    
+    virtual ~Object() { }
 };
 
 class Triangle : public Object {
@@ -139,8 +141,9 @@ int main() {
     figures.push_back(Rec);
     figures.push_back(Cr);
 
-    for (int i = 0; i < figures.size(); i++)
+    for (Object* i : figures)
     {
-        figures[i]->area();
+        i->area();
+        delete i;
     }
 }
