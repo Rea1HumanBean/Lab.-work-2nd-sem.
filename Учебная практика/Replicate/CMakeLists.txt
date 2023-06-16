@@ -8,4 +8,3 @@ set(CMAKE_CXX_EXTENSION OFF)
 set(CMAKE_CXX_STANDART_REQUIRED TRUE)
 		
 add_executable("${PROJECT_NAME}" main.cpp)
-	
