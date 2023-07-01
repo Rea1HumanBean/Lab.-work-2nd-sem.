@@ -8,11 +8,18 @@ void Faster_copy(T a_begin, T b_begin, int size) {
     for(int i = 0; i < count; ++i) {
         *(ptr_b ++) = *(ptr_1 ++);
     }
-    char* ptr_2 = (char*)ptr_1;
-    char* ptr_2b = (char*)ptr_b;
-    count = (sizeof(T) * size) % sizeof(long long);
+
+    int* ptr_2 = (int*)ptr_1;
+    int* ptr_2b = (int*)ptr_b;
+    count = ((sizeof(T) * size) % sizeof(long long)) / sizeof(int);
     for(int i = 0; i < count; ++i) {
         *(ptr_2b ++) = *(ptr_2++);
+    }
+    char* ptr_3 = (char*)ptr_2;
+    char* ptr_3b = (char*)ptr_2b;
+    count = ((sizeof(T) * size) % sizeof(long long)) % sizeof(int);
+    for (int i = 0; i < count; ++i) {
+        *(ptr_3b++) = *(ptr_3++);
     }
 }
 
